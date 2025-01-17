@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+from bs4 import BeautifulSoup
+
+import requests
+
 
 @dataclass
 class Quote:
@@ -9,7 +13,10 @@ class Quote:
 
 
 def main(output_csv_path: str) -> None:
-    pass
+    r = requests.get("https://quotes.toscrape.com/",)
+    bs = BeautifulSoup(r.text, "html.parser")
+    bs_quotes = bs.find(".quote")
+    print(bs_quotes)
 
 
 if __name__ == "__main__":
