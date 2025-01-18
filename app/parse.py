@@ -27,8 +27,8 @@ def create_page_link(base_url: str, next_page_url: str) -> str:
 
 
 def get_soup_page(url: str) -> BeautifulSoup:
-    r = requests.get(url, ).content
-    soup = BeautifulSoup(r, "html.parser")
+    res = requests.get(url, ).content
+    soup = BeautifulSoup(res, "html.parser")
     return soup
 
 
@@ -56,7 +56,7 @@ def pars_single_quote(quote: Tag) -> Quote:
     return Quote(text=str(text), author=str(author), tags=list(tags))
 
 
-def write_quotes_to_csv(quotes, output_csv_path):
+def write_quotes_to_csv(quotes: list[Quote], output_csv_path: str) -> None:
     with open(output_csv_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(QUOTES_FIELDS)
