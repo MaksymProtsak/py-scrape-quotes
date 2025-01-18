@@ -1,4 +1,8 @@
-from dataclasses import dataclass
+import csv
+from dataclasses import (
+    dataclass,
+    fields, astuple
+)
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup, Tag
@@ -13,6 +17,9 @@ class Quote:
     text: str
     author: str
     tags: list[str]
+
+
+QUOTES_FIELDS = [field.name for field in fields(Quote)]
 
 
 def create_page_link(base_url: str, next_page_url: str) -> str:
@@ -49,6 +56,13 @@ def pars_single_quote(quote: Tag) -> Quote:
     return Quote(text=str(text), author=str(author), tags=list(tags))
 
 
+def write_quotes_to_csv(quotes, output_csv_path):
+    with open(output_csv_path, "w",  encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(QUOTES_FIELDS)
+        writer.writerows([astuple(quote) for quote in quotes])
+
+
 def main(output_csv_path: str) -> None:
     page_link = create_page_link(BASE_URL, "")
     bs_page = get_soup_page(page_link)
@@ -60,13 +74,14 @@ def main(output_csv_path: str) -> None:
             parsed_quotes.append(
                 pars_single_quote(quote)
             )
-        if is_next_page["is_next_page"]:
-            page_link = create_page_link(BASE_URL, is_next_page["next_page_link"])
-            bs_page = get_soup_page(page_link)
-            is_next_page = next_page(bs_page)
-            quotes = get_quotes(bs_page)
-        else:
+        if not is_next_page["is_next_page"]:
             break
+        page_link = create_page_link(BASE_URL, is_next_page["next_page_link"])
+        bs_page = get_soup_page(page_link)
+        is_next_page = next_page(bs_page)
+        quotes = get_quotes(bs_page)
+
+    write_quotes_to_csv(parsed_quotes, output_csv_path)
 
 
 if __name__ == "__main__":
