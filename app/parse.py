@@ -57,7 +57,7 @@ def pars_single_quote(quote: Tag) -> Quote:
 
 
 def write_quotes_to_csv(quotes, output_csv_path):
-    with open(output_csv_path, "w",  encoding="utf-8", newline="") as f:
+    with open(output_csv_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(QUOTES_FIELDS)
         writer.writerows([astuple(quote) for quote in quotes])
